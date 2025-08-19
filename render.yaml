@@ -1,0 +1,21 @@
+# Exported from Render on 2025-08-19T11:43:17Z
+services:
+- type: web
+  name: balaji-sales
+  runtime: node
+  repo: https://github.com/denisradadiya9807/balaji-sales
+  plan: free
+  envVars:
+  - key: PASSWORD_ENCRYPTION_SECRET
+    sync: false
+  - key: JWT_SECRET
+    sync: false
+  - key: MONGO_URI
+    sync: false
+  - key: APP_URI
+    sync: false
+  region: oregon
+  buildCommand: npm install
+  startCommand: node app.js
+  autoDeployTrigger: commit
+version: "1"
