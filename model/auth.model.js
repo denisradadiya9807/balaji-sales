@@ -1,6 +1,14 @@
 var mongoose = require('mongoose');
 var mongosepaginate = require('mongoose-paginate-v2');
 let auth = new mongoose.Schema({
+    Route: {
+        type: String,
+        require: true
+    },
+    roleid: {
+        type: String,
+        require: true
+    },
     Email: {
         type: String,
         require: true,
@@ -10,6 +18,10 @@ let auth = new mongoose.Schema({
             },
             message: 'Invalid email format',
         },
+    },
+    Username: {
+        type: String,
+        require: true
     },
     Password: {
         type: String,
@@ -33,8 +45,11 @@ let auth = new mongoose.Schema({
     },
     Address: {
         type: String
+    },
+    Status: {
+        type: Boolean,
+        require: true
     }
-
 })
 auth.plugin(mongosepaginate);
 module.exports = auth;

@@ -1,11 +1,11 @@
 const express = require('express');
 const router = express.Router();
-const mongoConection = require('../../../utility/connection');
-const constants = require('../../../utility/constants');
-const helper = require('../../../utility/helper');
+const mongoConection = require('../../utility/connection');
+const constants = require('../../utility/constants');
+const helper = require('../../utility/helper');
 const nodemailer = require('nodemailer');
-const otpModel = require('../../../model/otp.model');
-const registermodel = require('../../../model/auth.model');
+const otpModel = require('../../model/otp.model');
+const registermodel = require('../../model/auth.model');
 require('dotenv').config();
 const responseManager = {
     onSuccess: (message, data, res) => {

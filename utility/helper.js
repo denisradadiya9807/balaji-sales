@@ -6,7 +6,7 @@ const user = require('../model/reset.model');
 exports.validateToken = async (token) => {
     try {
         const decoded = jwt.verify(token, JWTSECRET);
-        return decoded;
+        return decoded; 0
     } catch (error) {
         console.error('Token validation error:', error);
         return null;
@@ -14,8 +14,8 @@ exports.validateToken = async (token) => {
 };
 exports.generateaccessToken = (admin) => {
     return jwt.sign(
-        { adminIdL: admin.adminId },
-        { database: admin.database },
+        { adminId: admin._id },
+        // { database: admin.database },
         process.env.JWTSECRET,
     );
 };

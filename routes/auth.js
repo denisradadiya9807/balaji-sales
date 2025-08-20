@@ -1,0 +1,19 @@
+var express = require('express');
+var router = express.Router();
+const helper = require('../utility/helper');
+const saveCtrl = require('../controller/auth/register');
+const loginCtrl = require('../controller/auth/login');
+const resetpass = require('../controller/auth/resetpassword');
+const verifuotp = require('../controller/auth/resetpassword');
+const setpassword = require('../controller/auth/resetpassword');
+const list = require('../controller/auth/list');
+const userupdate = require('../controller/auth/userupdate');
+
+router.post('/userupdate', helper.authenticateToken, userupdate.userupdate);
+router.post('/setpassword', setpassword.setpassword);
+router.get('/list', list.list);
+router.post('/reset', resetpass.reset);
+router.post('/verifyotp', verifuotp.verifyotp);
+router.post('/login', loginCtrl.login);
+router.post('/save', saveCtrl.register);
+module.exports = router;

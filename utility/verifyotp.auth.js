@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const SECRET_KEY = 'FIRST'; // Make sure this is the same secret you use for signing tokens
-const user = require('../models/reset.model');
+const user = require('../model/reset.model');
 // Token Validation Middleware
 const verifyotp = async ({ email, otpcode }) => {
     try {

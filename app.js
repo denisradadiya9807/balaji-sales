@@ -31,15 +31,16 @@ const adminpath = [
   { path: '/role', routesFile: 'role' },
 
 ]
-const shopowner = [
+const auth = [
   { path: '/auth', routesFile: 'auth' },
 ]
 adminpath.forEach((adminpath) => {
   app.use('/Admin' + adminpath.path, require('./routes/Admin/' + adminpath.routesFile));
 });
 
-shopowner.forEach((shopowner) => {
-  app.use('/shopowner' + shopowner.path, require('./routes/shopowner/' + shopowner.routesFile));
+auth.forEach((auth) => {
+  app.use('' + auth.path, require('./routes/' + auth.routesFile));
 });
+// console.log("pass->", helper.passwordDecryptor("U2FsdGVkX19DjGnjBkrf8blbhrCK3KyJkxVPkviOW3K8I3rnhE9PIElt96zqsmhq7/B9GERPOv3VfspIQc37lrCS2yhIYjMYudVCkQH9nCxcpUNBMdpVQrC6N7hPKH4xVdWBokzn1lP8c5sgvt56EA=="));
 
 module.exports = app;
