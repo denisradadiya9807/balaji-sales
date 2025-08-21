@@ -34,6 +34,15 @@ const adminpath = [
 const auth = [
   { path: '/auth', routesFile: 'auth' },
 ]
+
+const userspath = [
+  { path: '/route', routesFile: 'route' },
+]
+
+userspath.forEach((userspath) => {
+  app.use('/users' + userspath.path, require('./routes/users/' + userspath.routesFile));
+});
+
 adminpath.forEach((adminpath) => {
   app.use('/Admin' + adminpath.path, require('./routes/Admin/' + adminpath.routesFile));
 });

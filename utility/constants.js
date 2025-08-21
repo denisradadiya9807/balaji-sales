@@ -5,7 +5,8 @@ let constants = {
         admins: 'admins',
         roles: 'roles',
         userregisters: 'userregisters',
-        otps: 'otps'
+        otps: 'otps',
+        routes: 'routes'
     }
 
 };

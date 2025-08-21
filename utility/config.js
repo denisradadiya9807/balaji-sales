@@ -8,7 +8,7 @@ const _ = require('lodash');
 let getadmincollection = [
     { text: 'admin', value: 'admin' },
     { text: 'role', value: 'role' },
-    { text: 'role', value: 'role' },
+    { text: 'users', value: 'users' },
 
 ]
 // let getsuperadmincollection = [
