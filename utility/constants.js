@@ -6,7 +6,9 @@ let constants = {
         roles: 'roles',
         userregisters: 'userregisters',
         otps: 'otps',
-        routes: 'routes'
+        routes: 'routes',
+        categories: 'categories',
+        products: 'products',
     }
 
 };

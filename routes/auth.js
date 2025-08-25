@@ -8,7 +8,9 @@ const verifuotp = require('../controller/auth/resetpassword');
 const setpassword = require('../controller/auth/resetpassword');
 const list = require('../controller/auth/list');
 const userupdate = require('../controller/auth/userupdate');
+const getone = require('../controller/auth/getone');
 
+router.post('/getone', helper.authenticateToken, getone.getone);
 router.post('/userupdate', helper.authenticateToken, userupdate.userupdate);
 router.post('/setpassword', setpassword.setpassword);
 router.get('/list', list.list);

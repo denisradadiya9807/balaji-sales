@@ -9,6 +9,7 @@ let getadmincollection = [
     { text: 'admin', value: 'admin' },
     { text: 'role', value: 'role' },
     { text: 'users', value: 'users' },
+    { text: 'products', value: 'products' },
 
 ]
 // let getsuperadmincollection = [
@@ -18,12 +19,10 @@ let getadmincollection = [
 async function getadminPermission(roleid, modelName, permissionType) {
     let primary = mongoConnection.useDb(constants.balajisales);
     let result = await primary.model(constants.Model.roles, superroleModel).findById(roleid).lean();
-
     if (result && result.status && result.status == true) {
         let finalpermission = [];
         finalpermission = _.filter(result.permissions, { 'collectionname': modelName });
         // console.log("collection name->", finalpermission);
-
         if (finalpermission.length == 1) {
             if (permissionType == "View") {
                 if (finalpermission[0].View == true)

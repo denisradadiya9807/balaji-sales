@@ -37,6 +37,7 @@ const auth = [
 
 const userspath = [
   { path: '/route', routesFile: 'route' },
+  { path: '/products', routesFile: 'products' },
 ]
 
 userspath.forEach((userspath) => {
