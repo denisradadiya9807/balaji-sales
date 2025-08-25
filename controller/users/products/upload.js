@@ -16,7 +16,7 @@ exports.upload = async (req, res) => {
 
                     let uploadpaths = [];
                     async.forEachSeries(req.files, (file, next_file) => {
-                        cloudinary.saveMultipart(file.buffer, req.token._id.toString(), 'products').then((result) => {
+                        cloudinary.saveMultipart(file.buffer).then((result) => {
                             let f1 = result.data.Key.split("/");
                             let ext = result.data.Key.split(".");
                             let obj = {

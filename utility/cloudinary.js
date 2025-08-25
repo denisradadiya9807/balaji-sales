@@ -15,15 +15,11 @@ const credentials = {
 //     },
 // });
 const cloudinarya = credentials;
-async function saveMultipart(buffer, parentfolder, contentType, sendorreceive) {
+async function saveMultipart(buffer) {
     let promise = new Promise(function (resolve, reject) {
-        let newContentType = contentType.split(";");
+        // let newContentType = contentType.split(";");
         let blobName = "";
-        allowedContentTypes.allowedContentTypes.some((element, index) => {
-            if (element.mimeType == newContentType[0]) {
-                blobName = parentfolder + '/' + sendorreceive + '/' + setBlobName(element.fName, element.extn);
-            }
-        });
+
         const Bucket = cloudinarya.CLOUD_NAME;
         const Key = blobName;
         const Body = buffer;
@@ -53,4 +49,4 @@ async function saveMultipart(buffer, parentfolder, contentType, sendorreceive) {
     return promise;
 };
 
-module.exports = { cloudinarya,  saveMultipart };
+module.exports = { cloudinarya, saveMultipart };
