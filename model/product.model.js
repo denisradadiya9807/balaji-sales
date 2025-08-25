@@ -50,6 +50,10 @@ let productadd = new mongoose.Schema({
     },
     productid: {
         type: String
+    },
+    orignalAmount: {
+        type: Number,
+        require: true
     }
 });
 productadd.plugin(mongoosepaginate);
