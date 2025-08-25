@@ -16,16 +16,16 @@ exports.upload = async (req, res) => {
 
                     let uploadpaths = [];
                     async.forEachSeries(req.files, (file, next_file) => {
-                        cloudinary.saveMultipart(file.buffer, req.token._id.toString(), file.mimetype, 'products').then((result) => {
+                        cloudinary.saveMultipart(file.buffer, req.token._id.toString(), 'products').then((result) => {
                             let f1 = result.data.Key.split("/");
                             let ext = result.data.Key.split(".");
                             let obj = {
                                 path: result.data.Key,
-                                type: helper.getFileType(file.mimetype),
+                                // type: helper.getFileType(file.mimetype),
                                 // mime: file.mimetype,
                                 name: f1[f1.length - 1],
                                 fileext: ext[ext.length - 1].toUpperCase(),
-                                filesizeinmb: parseFloat(sizeOfImageInMB).toFixed(2)
+                                // filesizeinmb: parseFloat(sizeOfImageInMB).toFixed(2)
                             };
                             uploadpaths.push(obj);
                             next_file();
