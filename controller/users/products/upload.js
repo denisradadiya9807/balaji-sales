@@ -4,40 +4,47 @@ const mongoconnection = require('../../../utility/connection');
 const responsemanager = require('../../../utility/response.manager');
 const registermodel = require('../../../model/auth.model');
 const config = require('../../../utility/config');
-const cloudinary = require('../../../utility/cloudinary');
+const { cloudinary } = require('../../../utility/cloudinary');
+const fs = require('fs');
 exports.upload = async (req, res) => {
+    // console.log(req.token);
     if (req.token && mongoose.Types.ObjectId.isValid(req.token._id)) {
         let primary = mongoconnection.useDb(constant.balajisales);
-        let adminData = await primary.model(constant.Model.userregisters, registermodel).findById(req.token._id)
+        let adminData = await primary.model(constant.Model.userregisters, registermodel).findById(req.token._id).lean();
         if (adminData && adminData != null && adminData.Status === true) {
             let permission = await config.getadminPermission(adminData.roleid, 'products', 'InsertUpdate');
             if (permission) {
-                if (req.file) {
-
-                    let uploadpaths = [];
-                    async.forEachSeries(req.files, (file, next_file) => {
-                        cloudinary.saveMultipart(file.buffer).then((result) => {
-                            let f1 = result.data.Key.split("/");
-                            let ext = result.data.Key.split(".");
-                            let obj = {
-                                path: result.data.Key,
-                                // type: helper.getFileType(file.mimetype),
-                                // mime: file.mimetype,
-                                name: f1[f1.length - 1],
-                                fileext: ext[ext.length - 1].toUpperCase(),
-                                // filesizeinmb: parseFloat(sizeOfImageInMB).toFixed(2)
-                            };
-                            uploadpaths.push(obj);
-                            next_file();
-                        }).catch((error) => {
-                            return responsemanager.onError(error, res);
+                if (req.files && req.files.length > 0) {
+                    try {
+                        const imageUrls = [];
+                        for (const file of req.files) {
+                            const result = await cloudinary.uploader.upload(file.path, {
+                                folder: 'products',
+                                public_id: file.originalname.split('.')[0] + '-' + Date.now(),
+                                use_filename: true,
+                                unique_filename: false,
+                            });
+                            imageUrls.push({
+                                originalName: file.originalname,
+                                url: result.secure_url,
+                                public_id: result.public_id
+                            });
+                            // Delete temp file after upload
+                            if (fs.existsSync(file.path)) fs.unlinkSync(file.path);
+                        }
+                        return res.status(200).json({
+                            status: true,
+                            message: 'Files uploaded successfully',
+                            files: imageUrls
                         });
-
-                    }, () => {
-                        return responsemanager.onSuccess('Files uploaded successfully...', uploadpaths, res);
-                    });
+                    } catch (err) {
+                        return responsemanager.onError(err.message, res);
+                    }
                 } else {
-
+                    return responsemanager.onBadRequest(
+                        { message: 'No files provided. Please upload one or more images.' },
+                        res
+                    );
                 }
 
             } else {
@@ -51,3 +58,4 @@ exports.upload = async (req, res) => {
     }
 
 }
+
