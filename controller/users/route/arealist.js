@@ -30,7 +30,6 @@ exports.list = async (req, res) => {
             } else {
                 return responseManager.accessdenied(res);
             }
-
         } else {
             return responseManager.unauthorisedRequest(res);
         }

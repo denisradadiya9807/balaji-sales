@@ -7,7 +7,7 @@ const config = require('../../../utility/config');
 const mongoconnection = require('../../../utility/connection');
 const productmodel = require('../../../model/product.model');
 const responsemanager = require('../../../utility/response.manager');
-exports.list = async (req, res) => {    
+exports.list = async (req, res) => {
     const { page, limit, search, sortoption } = req.body;
     if (req.token && mongoose.Types.ObjectId.isValid(req.token._id)) {
         let primary = mongoconnection.useDb(constant.balajisales);
@@ -41,6 +41,42 @@ exports.list = async (req, res) => {
                 }).catch((error) => {
                     return responsemanager.onError(error, res);
                 })
+            } else {
+                return responsemanager.accessdenied(res);
+            }
+        } else {
+            return responsemanager.unauthorisedRequest(res);
+        }
+    } else {
+        return responsemanager.unauthorisedRequest(res);
+    }
+};
+exports.reorderlist = async (req, res) => {
+    if (req.token && mongoose.Types.ObjectId.isValid(req.token._id)) {
+        let primary = mongoconnection.useDb(constant.balajisales);
+        let adminData = await primary.model(constant.Model.userregisters, adminmodel).findById(req.token._id).lean();
+        if (adminData && adminData != null && adminData.Status === true) {
+            let getpermission = await config.getadminPermission(adminData.roleid, 'products', 'View');
+            if (getpermission) {
+                try {
+                    const { reorderlist } = req.body;
+                    if (!Array.isArray(reorderlist) || reorderlist.length === 0) {
+                        return res.status(400).json({ error: 'reorderlist must be a non-empty array of product IDs' });
+                    }
+                    let updatedlist = [];
+                    for (let i = 0; i < reorderlist.length; i++) {
+                        if (mongoose.Types.ObjectId.isValid(reorderlist[i])) {
+                            await primary.model(constant.Model.products, productmodel).findByIdAndUpdate(reorderlist[i], { order: i });
+                            updatedlist.push({
+                                _id: reorderlist[i],
+                                order: i
+                            })
+                        }
+                    }
+                    return responsemanager.onSuccess('Order List Update Successfully...', updatedlist, res);
+                } catch (error) {
+                    res.Status(500).json({ error: 'Failed Thie List Update' });
+                }
             } else {
                 return responsemanager.accessdenied(res);
             }

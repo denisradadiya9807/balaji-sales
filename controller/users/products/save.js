@@ -12,7 +12,7 @@ const productmodel = require('../../../model/product.model');
 const async = require('async');
 
 exports.save = async (req, res) => {
-    const { product_type, category, Product_name, Description, patti, Quantity_patti, Single_pcs, price, QtyInCartoon, totalAmount, productid, subjectids, orignalAmount } = req.body;
+    const { product_type, category, Product_name, Description, patti, Quantity_patti, Single_pcs, price, QtyInCartoon, totalAmount, productid, subjectids, orignalAmount, imageUrl, order } = req.body;
     if (req.token && mongoose.Types.ObjectId.isValid(req.token._id)) {
         let primary = mongoconnection.useDb(constants.balajisales);
         let admindata = await primary.model(constants.Model.userregisters, registermodel).findById(req.token._id).lean();
@@ -35,6 +35,12 @@ exports.save = async (req, res) => {
                                                     ]
                                                 }).lean();
                                                 if (checkExist == null) {
+                                                    let nextorder = 1
+                                                    if (!order) {
+                                                        let maxorder = await primary.model(constants.Model.products, productmodel).findOne({}).sort({ order: -1 }).select('order').lean();
+                                                        nextorder = maxorder ? maxorder.order + 1 : 1;
+                                                    }
+
                                                     let amount = price * QtyInCartoon;
                                                     let obj = {
                                                         product_type: product_type,
@@ -50,6 +56,8 @@ exports.save = async (req, res) => {
                                                         orignalAmount: orignalAmount,
                                                         active: true,
                                                         instock: true,
+                                                        imageUrl: imageUrl,
+                                                        order: (!isNaN(parseInt(order))) ? parseInt(order) : nextorder
                                                     };
                                                     if (product_type === 'patti') {
                                                         obj.Quantity_patti = Quantity_patti
@@ -68,6 +76,11 @@ exports.save = async (req, res) => {
                                                     ]
                                                 }).lean();
                                                 if (checkExist == null) {
+                                                    let nextorder = 1
+                                                    if (!order) {
+                                                        let maxorder = await primary.model(constants.Model.products, productmodel).findOne({}).sort({ order: -1 }).select('order').lean();
+                                                        nextorder = maxorder ? maxorder.order + 1 : 1;
+                                                    }
                                                     let amount = price * QtyInCartoon;
                                                     let obj = {
                                                         product_type: product_type,
@@ -83,6 +96,8 @@ exports.save = async (req, res) => {
                                                         orignalAmount: orignalAmount,
                                                         active: true,
                                                         instock: true,
+                                                        imageUrl: String,
+                                                        order: (!isNaN(parseInt(order))) ? parseInt(order) : nextorder
                                                     };
                                                     if (product_type == 'patti') {
                                                         obj.Quantity_patti = Quantity_patti

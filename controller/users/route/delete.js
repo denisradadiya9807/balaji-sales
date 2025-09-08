@@ -13,7 +13,7 @@ exports.delete = async (req, res) => {
         let primary = mongoconnection.useDb(constants.balajisales);
         let classs = await primary.model(constants.Model.userregisters, adminmodel).findById(req.token._id).lean();
         if (classs && classs != null && classs.Status === true) {
-            let havepermissions = await config.getadminPermission(classs.roleid, 'users', 'Delete');
+            let havepermissions = await config.getadminPermission(classs.roleid, 'routes', 'Delete');
             if (havepermissions) {
                 if (!mongoose.Types.ObjectId.isValid(routid)) {
                     return responseManager.onBadRequest({ message: "This Id Is Not valid please check id" }, res);

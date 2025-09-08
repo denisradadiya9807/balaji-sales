@@ -10,6 +10,8 @@ let getadmincollection = [
     { text: 'role', value: 'role' },
     { text: 'users', value: 'users' },
     { text: 'products', value: 'products' },
+    { text: 'routes', value: 'routes' },
+
 
 ]
 // let getsuperadmincollection = [

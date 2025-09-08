@@ -14,7 +14,7 @@ exports.getpermission = async (req, res) => {
     let finalpermission = [];
     async.forEach(config.getadmincollection, (Permissions, next_permission) => {
         let obj = {
-            displayname: Permissions.text,
+            displayname: Permissions.text,  
             collectionname: Permissions.value,
             insertupdate: false,
             Delete: false,

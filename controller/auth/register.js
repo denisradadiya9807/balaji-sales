@@ -35,8 +35,7 @@ exports.register = async (req, res) => {
                                 Status: Status
                             }
                             let createdata = await primary.model(constant.Model.userregisters, authmodel).create(obj);
-                            let generateAccessToken = await helper.generateAccessToken({ _id: createdata._id.toString() })
-                            return responsemanager.onSuccess('You Are Register Successfully...', { token: generateAccessToken }, res);
+                            return responsemanager.onSuccess('You Are Register Successfully...', createdata, res);
                         } else {
                             return responsemanager.onBadRequest({ Message: 'Please Enter UserName...' }, res);
                         }

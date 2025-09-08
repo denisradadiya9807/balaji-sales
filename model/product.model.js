@@ -54,6 +54,12 @@ let productadd = new mongoose.Schema({
     orignalAmount: {
         type: Number,
         require: true
+    },
+    imageUrl: {
+        type: String,
+    },
+    order: {
+        type: Number
     }
 });
 productadd.plugin(mongoosepaginate);

@@ -14,7 +14,7 @@ exports.list = async (req, res) => {
         const primary = mongoconnection.useDb(constant.balajisales);
         let adminData = await primary.model(constant.Model.userregisters, adminmodel).findById(req.token._id).lean();
         if (adminData && adminData != null && adminData.Status === true) {
-            let getpermission = await config.getadminPermission(adminData.roleid, 'users', 'View');
+            let getpermission = await config.getadminPermission(adminData.roleid, 'routes', 'View');
             if (getpermission) {
                 let roleData = await primary.model(constant.Model.routes, routemodel).find({ route_name: { '$regex': new RegExp(search, "i") }, }).lean();
                 return responsemanager.onSuccess('Routes list...', roleData, res);

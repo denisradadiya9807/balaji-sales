@@ -20,7 +20,12 @@ let route = new mongoose.Schema({
     driver_alternet_number: {
         type: String,
         require: true
-    }
+    },
+    area: {
+        type: String,
+        require: true
+    },
+
 
 });
 route.plugin(mongoosepaginate);
