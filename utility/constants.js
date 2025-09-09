@@ -9,6 +9,7 @@ let constants = {
         routes: 'routes',
         categories: 'categories',
         products: 'products',
+        addtocarts: 'addtocarts',
     }
 
 };
