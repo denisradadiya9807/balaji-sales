@@ -15,7 +15,7 @@ exports.list = async (req, res) => {
         if (admindata && admindata != null && admindata.Status === true) {
             let permission = await config.getadminPermission(admindata.roleid, 'products', 'View');
             if (permission) {
-                let cart = await primary.model(constants.Model.addtocarts, addtocart).findOne({}).lean();
+                let cart = await primary.model(constants.Model.addtocarts, addtocart).find({}).lean();
                 return responsemanager.onSuccess('Your Cart.', cart, res);
             } else {
                 return responsemanager.accessdenied(res)
