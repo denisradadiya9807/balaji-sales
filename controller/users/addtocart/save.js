@@ -20,33 +20,23 @@ exports.save = async (req, res) => {
             let permission = await config.getadminPermission(admindata.roleid, 'products', 'InsertUpdate');
             if (permission) {
                 if (quantity && quantity != '' && quantity != null && quantity != undefined) {
-                    if (!mongoose.Types.ObjectId.isValid(productid)) {
-                        return responsemanager.onBadRequest({ message: 'Product Id Not Valid' }, res);
-                    }
-                    let productdata = await primary.model(constants.Model.products, productmodel).findOne({ _id: new mongoose.Types.ObjectId(productid) })
-                    if (!productdata) {
-                        return responsemanager.onBadRequest({ message: 'Product Data Not Found...' }, res); s
-                    }
-                    let obj = {
-                        productid: productid,
-                        quantity: quantity
-                    }
-                    if (cartid) {
-                        let updatedata = await primary.model(constants.Model.addtocarts, addtocart).findOneAndUpdate({ _id: new mongoose.Types.ObjectId(cartid) }, obj).lean();
+                    if (cartid && mongoose.Types.ObjectId.isValid(cartid)) {
+                        let updatedata = await primary.model(constants.Model.addtocarts, addtocart).findOneAndUpdate({ _id: new mongoose.Types.ObjectId(cartid) }, { quantity }, { new: true }).lean();
                         if (updatedata) {
-                            return responsemanager.onSuccess('The Addtocart UpdatebSuccess...', updatedata, res);
-                        }
-                        let exitingdata = await primary.model(constants.Model.addtocarts, addtocart).findOne({ productid: productid }).lean()
-                        if (exitingdata) {
-                            return responsemanager.onBadRequest({ message: " This Productid Is Already Exits in your cart..." }, res)
+                            return responsemanager.onSuccess('Cart Update Success', updatedata, res);
                         } else {
-                            return responsemanager.unauthorisedRequest({ message: 'Updatedata Not updated ' }, res);
+                            return responsemanager.onBadRequest({ message: "Cart Iteam Not Found" }, res);
                         }
-
-                    } else {
-                        let addtocarts = await primary.model(constants.Model.addtocarts, addtocart).create(obj);
-                        return responsemanager.onSuccess('Your Product Addto cart success', addtocarts, res)
                     }
+                    if (!mongoose.Types.ObjectId.isValid(productid)) {
+                        return responsemanager.onBadRequest({ message: "Invalid Product Id" }, res);
+                    }
+                    let existing = await primary.model(constants.Model.addtocarts, addtocart).findOne({ productid: productid }).lean();
+                    if (existing) {
+                        return responsemanager.onBadRequest({ message: "This Product is already in your cart" }, res);
+                    }
+                    let newcart = await primary.model(constants.Model.addtocarts, addtocart).create({ productid, quantity });
+                    return responsemanager.onSuccess('Product added To cart success', newcart, res);
                 } else {
                     return responsemanager.onBadRequest({ message: "Product quantity require.." }, res);
                 }
