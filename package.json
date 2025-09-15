@@ -17,12 +17,14 @@
     "fs": "^0.0.1-security",
     "http-errors": "~1.6.3",
     "jsonwebtoken": "^9.0.2",
+    "length": "^0.0.1",
     "lodash": "^4.17.21",
     "mongoose": "^8.17.1",
     "mongoose-paginate-v2": "^1.9.1",
     "morgan": "~1.9.1",
     "multer": "^2.0.2",
     "multer-storage-cloudinary": "^4.0.0",
-    "nodemailer": "^7.0.5"
+    "nodemailer": "^7.0.5",
+    "reduce": "^1.0.3"
   }
 }

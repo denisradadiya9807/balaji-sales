@@ -10,6 +10,7 @@ let constants = {
         categories: 'categories',
         products: 'products',
         addtocarts: 'addtocarts',
+        orders: 'orders',
     }
 
 };

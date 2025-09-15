@@ -39,6 +39,7 @@ const userspath = [
   { path: '/route', routesFile: 'route' },
   { path: '/products', routesFile: 'products' },
   { path: '/addtocart', routesFile: 'addtocart' },
+  { path: '/order', routesFile: 'order' },
 ]
 
 userspath.forEach((userspath) => {

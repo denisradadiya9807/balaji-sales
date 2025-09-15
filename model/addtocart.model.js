@@ -12,6 +12,9 @@ var addtocart = new mongoose.Schema({
     grandTotal: { type: Number, default: 0 },
     userid: {
         type: String
+    },
+    productid: {
+        type: String
     }
 })
 addtocart.plugin(mongoosepaginate);
