@@ -10,9 +10,8 @@ const responsemanager = require('../../../utility/response.manager');
 const categorymodel = require('../../../model/category.model');
 const productmodel = require('../../../model/product.model');
 const async = require('async');
-
 exports.save = async (req, res) => {
-    const { product_type, category, Product_name, Description, patti, Quantity_patti, Single_pcs, price, QtyInCartoon, totalAmount, productid, subjectids, orignalAmount, imageUrl, order } = req.body;
+    const { variants, category, Product_name, Description, totalAmount, productid, orignalAmount, imageUrl, order } = req.body;
     if (req.token && mongoose.Types.ObjectId.isValid(req.token._id)) {
         let primary = mongoconnection.useDb(constants.balajisales);
         let admindata = await primary.model(constants.Model.userregisters, registermodel).findById(req.token._id).lean();
@@ -22,104 +21,104 @@ exports.save = async (req, res) => {
                 if (category && category != '' && category != null && category != undefined) {
                     if (Description && Description != '' && Description != null && Description != undefined) {
                         if (Product_name && Product_name != '' && Product_name != null && Product_name != undefined) {
-                            if (price && price != '' && price != null && price != undefined) {
-                                if (QtyInCartoon && QtyInCartoon != '' && QtyInCartoon != null && QtyInCartoon != undefined) {
-                                    if (orignalAmount && orignalAmount != '' && orignalAmount != null && orignalAmount != undefined) {
-                                        if (totalAmount != null && totalAmount != undefined) {
-                                            if (productid && productid.trim() != '' && productid != null && productid != undefined && mongoose.Types.ObjectId.isValid(productid)) {
-                                                let checkExist = await primary.model(constants.Model.products, productmodel).findOne({
-                                                    _id: { $ne: new mongoose.Types.ObjectId(productid) },
-                                                    $and: [
-                                                        { Product_name: Product_name },
-                                                        { product_type: product_type }
-                                                    ]
-                                                }).lean();
-                                                if (checkExist == null) {
-                                                    let nextorder = 1
-                                                    if (!order) {
-                                                        let maxorder = await primary.model(constants.Model.products, productmodel).findOne({}).sort({ order: -1 }).select('order').lean();
-                                                        nextorder = maxorder ? maxorder.order + 1 : 1;
-                                                    }
+                            // if (price && price != '' && price != null && price != undefined) {
+                            if (variants && variants != '' && variants != null && variants != undefined) {
+                                if (orignalAmount && orignalAmount != '' && orignalAmount != null && orignalAmount != undefined) {
+                                    if (totalAmount != null && totalAmount != undefined) {
+                                        // const variants = [
+                                        //     { type: "Patti", qty: 10, price: 5 },
+                                        //     { type: "Carton", qty: 2, price: 100 }
+                                        // ];
 
-                                                    let amount = price * QtyInCartoon;
-                                                    let obj = {
-                                                        product_type: product_type,
-                                                        category: category,
-                                                        Product_name: Product_name,
-                                                        Description: Description,
-                                                        // patti: patti,
-                                                        // Quantity_patti: Quantity_patti,
-                                                        // Single_pcs: Single_pcs,
-                                                        price: price,
-                                                        QtyInCartoon: QtyInCartoon,
-                                                        totalAmount: amount,
-                                                        orignalAmount: orignalAmount,
-                                                        active: true,
-                                                        instock: true,
-                                                        imageUrl: imageUrl,
-                                                        order: (!isNaN(parseInt(order))) ? parseInt(order) : nextorder
-                                                    };
-                                                    if (product_type === 'patti') {
-                                                        obj.Quantity_patti = Quantity_patti
-                                                    }
-                                                    await primary.model(constants.Model.products, productmodel).findByIdAndUpdate(productid, obj);
-                                                    let updatedclass = await primary.model(constants.Model.products, productmodel).findById(productid).lean();
-                                                    return responsemanager.onSuccess('product updated successfully...', updatedclass, res);
-                                                } else {
-                                                    return responsemanager.onBadRequest({ message: 'Product already exist...!' }, res);
+                                        let totalPriceCarton = 0;
+                                        let totalPricePatti = 0;
+
+                                        let processvarient = variants.map(v => {
+                                            const totalPrice = v.price * v.qty;
+
+                                            if (v.type === "Patti") totalPricePatti += totalPrice;
+                                            if (v.type === "Carton") totalPriceCarton += totalPrice;
+
+                                            return {
+                                                ...v,
+                                                totalPrice
+                                            };
+                                        });
+                                        const TotalAmount = totalPricePatti + totalPriceCarton;
+                                        if (productid && productid.trim() != '' && productid != null && productid != undefined && mongoose.Types.ObjectId.isValid(productid)) {
+                                            let checkExist = await primary.model(constants.Model.products, productmodel).findOne({
+                                                _id: { $ne: new mongoose.Types.ObjectId(productid) },
+                                                Product_name: Product_name
+
+                                            }).lean();
+                                            if (checkExist == null) {
+                                                let nextorder = 1
+                                                if (!order) {
+                                                    let maxorder = await primary.model(constants.Model.products, productmodel).findOne({}).sort({ order: -1 }).select('order').lean();
+                                                    nextorder = maxorder ? maxorder.order + 1 : 1;
                                                 }
+                                                let obj = {
+                                                    category: category,
+                                                    Product_name: Product_name,
+                                                    Description: Description,
+                                                    variants: processvarient,
+                                                    totalPricePatti: totalPricePatti,
+                                                    totalPriceCarton: totalPriceCarton,
+                                                    totalAmount: TotalAmount,
+                                                    orignalAmount: orignalAmount,
+                                                    isActive: true,
+                                                    instock: true,
+                                                    imageUrl: imageUrl,
+                                                    order: (!isNaN(parseInt(order))) ? parseInt(order) : nextorder
+                                                };
+                                                await primary.model(constants.Model.products, productmodel).findByIdAndUpdate(productid, obj);
+                                                let updatedclass = await primary.model(constants.Model.products, productmodel).findById(productid).lean();
+                                                return responsemanager.onSuccess('product updated successfully...', updatedclass, res);
                                             } else {
-                                                let checkExist = await primary.model(constants.Model.products, productmodel).findOne({
-                                                    $and: [
-                                                        { Product_name: new RegExp(["^", Product_name, "$"].join(""), "i") },
-                                                        { product_type: product_type }
-                                                    ]
-                                                }).lean();
-                                                if (checkExist == null) {
-                                                    let nextorder = 1
-                                                    if (!order) {
-                                                        let maxorder = await primary.model(constants.Model.products, productmodel).findOne({}).sort({ order: -1 }).select('order').lean();
-                                                        nextorder = maxorder ? maxorder.order + 1 : 1;
-                                                    }
-                                                    let amount = price * QtyInCartoon;
-                                                    let obj = {
-                                                        product_type: product_type,
-                                                        category: category,
-                                                        Product_name: Product_name,
-                                                        Description: Description,
-                                                        // patti: patti,
-                                                        // Quantity_patti: Quantity_patti,
-                                                        // Single_pcs: Single_pcs,
-                                                        price: price,
-                                                        QtyInCartoon: QtyInCartoon,
-                                                        totalAmount: amount,
-                                                        orignalAmount: orignalAmount,
-                                                        active: true,
-                                                        instock: true,
-                                                        imageUrl: String,
-                                                        order: (!isNaN(parseInt(order))) ? parseInt(order) : nextorder
-                                                    };
-                                                    if (product_type == 'patti') {
-                                                        obj.Quantity_patti = Quantity_patti
-                                                    }
-                                                    let newClass = await primary.model(constants.Model.products, productmodel).create(obj);
-                                                    return responsemanager.onSuccess('product added successfully...', newClass, res);
-                                                } else {
-                                                    return responsemanager.onBadRequest({ message: 'product already exist...!' }, res);
-                                                }
+                                                return responsemanager.onBadRequest({ message: 'Product already exist...!' }, res);
                                             }
                                         } else {
-                                            return responsemanager.onBadRequest({ message: 'Please Input totalAmount Field... ' }, res);
+                                            let checkExist = await primary.model(constants.Model.products, productmodel).findOne({
+                                                Product_name: new RegExp(["^", Product_name, "$"].join(""), "i"),
+                                            }).lean();
+                                            if (checkExist == null) {
+                                                let nextorder = 1
+                                                if (!order) {
+                                                    let maxorder = await primary.model(constants.Model.products, productmodel).findOne({}).sort({ order: -1 }).select('order').lean();
+                                                    nextorder = maxorder ? maxorder.order + 1 : 1;
+                                                }
+                                                let obj = {
+                                                    category: category,
+                                                    Product_name: Product_name,
+                                                    Description: Description,
+                                                    variants: processvarient,
+                                                    totalPricePatti: totalPricePatti,
+                                                    totalPriceCarton: totalPriceCarton,
+                                                    totalAmount: TotalAmount,
+                                                    orignalAmount: orignalAmount,
+                                                    isActive: true,
+                                                    instock: true,
+                                                    imageUrl: imageUrl,
+                                                    order: (!isNaN(parseInt(order))) ? parseInt(order) : nextorder
+                                                };
+                                                let newClass = await primary.model(constants.Model.products, productmodel).create(obj);
+                                                return responsemanager.onSuccess('product added successfully...', newClass, res);
+                                            } else {
+                                                return responsemanager.onBadRequest({ message: 'product already exist...!' }, res);
+                                            }
                                         }
                                     } else {
-                                        return responsemanager.onBadRequest({ message: 'Please Input orignalAmount Field... ' }, res);
+                                        return responsemanager.onBadRequest({ message: 'Please Input totalAmount Field... ' }, res);
                                     }
                                 } else {
-                                    return responsemanager.onBadRequest({ message: 'Please Input QtyInCartoon Field... ' }, res);
+                                    return responsemanager.onBadRequest({ message: 'Please Input orignalAmount Field... ' }, res);
                                 }
                             } else {
-                                return responsemanager.onBadRequest({ message: 'Please Input price Field... ' }, res);
+                                return responsemanager.onBadRequest({ message: 'Please provide variants...' }, res);
                             }
+                            // } else {
+                            //     return responsemanager.onBadRequest({ message: 'Please Input price Field... ' }, res);
+                            // }
                         } else {
                             return responsemanager.onBadRequest({ message: 'Please Input Product_name Field... ' }, res);
                         }

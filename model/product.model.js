@@ -1,5 +1,11 @@
 let mongoose = require('mongoose');
 let mongoosepaginate = require('mongoose-paginate-v2');
+let varientsadd = new mongoose.Schema({
+    type: { type: String, enum: ["Patti", "Carton"], require: true },
+    qty: Number,   // e.g. 1 for Patti, 16 for Carton
+    price: Number,
+    totalPrice: { type: Number } // qty * price
+}, { _id: true });
 let productadd = new mongoose.Schema({
     category: {
         type: mongoose.Types.ObjectId,
@@ -13,28 +19,18 @@ let productadd = new mongoose.Schema({
         type: String,
         require: true
     },
-    // patti: {
-    //     type: String,
-    //     require: true
-    // },
-    Quantity_patti: {
-        type: Number,
-    },
-    // Single_pcs: {
-    //     type: String,
-    //     require: true
-    // },
-    price: {
+    orignalAmount: {
         type: Number,
         require: true
     },
-    QtyInCartoon: {
-        type: Number,
-        require: true
+
+    variants: [varientsadd],
+
+    totalPricePatti: {
+        type: Number, default: 0
     },
-    product_type: {
-        type: String,
-        enum: ['Single_pcs', 'patti']
+    totalPriceCarton: {
+        type: Number, default: 0
     },
     totalAmount: {
         type: Number,
@@ -60,7 +56,8 @@ let productadd = new mongoose.Schema({
     },
     order: {
         type: Number
-    }
+    },
+    isActive: { type: Boolean, default: false }
 });
 productadd.plugin(mongoosepaginate);
 module.exports = productadd;

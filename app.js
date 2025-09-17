@@ -31,7 +31,7 @@ const adminpath = [
   { path: '/role', routesFile: 'role' },
 
 ]
-const auth = [
+const auths = [
   { path: '/auth', routesFile: 'auth' },
 ]
 
@@ -50,9 +50,9 @@ adminpath.forEach((adminpath) => {
   app.use('/Admin' + adminpath.path, require('./routes/Admin/' + adminpath.routesFile));
 });
 
-auth.forEach((auth) => {
-  app.use('' + auth.path, require('./routes/' + auth.routesFile));
+auths.forEach((auths) => {
+  app.use('/registeruser' + auths.path, require('./routes/' + auths.routesFile));
 });
-// console.log("pass->", helper.passwordDecryptor("U2FsdGVkX19DjGnjBkrf8blbhrCK3KyJkxVPkviOW3K8I3rnhE9PIElt96zqsmhq7/B9GERPOv3VfspIQc37lrCS2yhIYjMYudVCkQH9nCxcpUNBMdpVQrC6N7hPKH4xVdWBokzn1lP8c5sgvt56EA=="));
+// console.log("pass->", helper.passwordDecryptor("U2FsdGVkX19rzixDbdp7hX0VsP1ObbdCEu1qm9TGyBn/3wedtVnD2bOqawPkzpE8Vb+Q03z6Hf3CeQfpOGZkqPOHGVk/S4301UkfdCfmXaEwNe6ttPc/QP5/ZvqNgExm7y64M8PqGEb/SqFfUWaoKg=="));
 
 module.exports = app;

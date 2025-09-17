@@ -10,7 +10,7 @@ const list = require('../controller/auth/list');
 const userupdate = require('../controller/auth/userupdate');
 const getone = require('../controller/auth/getone');
 
-router.post('/getone', helper.authenticateToken, getone.getone);
+router.get('/getone', helper.authenticateToken, getone.getone);
 router.post('/userupdate', helper.authenticateToken, userupdate.userupdate);
 router.post('/setpassword', setpassword.setpassword);
 router.get('/list', list.list);
@@ -18,4 +18,4 @@ router.post('/reset', resetpass.reset);
 router.post('/verifyotp', verifuotp.verifyotp);
 router.post('/login', loginCtrl.login);
 router.post('/save', saveCtrl.register);
-module.exports = router;
+module.exports = router;    

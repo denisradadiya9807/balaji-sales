@@ -12,12 +12,12 @@ exports.rolelist = async (req, res) => {
     const { search } = req.body;
     // console.log(req.token.adminid);
     // console.log("✅ Valid ObjectId:", mongoose.Types.ObjectId.isValid(req.token?.adminid));
-    if (req.token && mongoose.Types.ObjectId.isValid(req.token.adminid)) {
+    if (req.token && mongoose.Types.ObjectId.isValid(req.token._id)) {
         const primary = mongoconnection.useDb(constant.balajisales);
-        let adminData = await primary.model(constant.Model.admins, adminmodel).findById(req.token.adminid).lean();
+        let adminData = await primary.model(constant.Model.admins, adminmodel).findById(req.token._id).lean();
         if (adminData && adminData != null && adminData.status === true) {
-            let getpermission = await config.getadminPermission(adminData.roleid, 'roles', 'View');
-            console.log('123=>', getpermission);
+            let getpermission = await config.getadminPermission(adminData.roleid, 'MainAdmin', 'View');
+            // console.log('123=>', getpermission);
             if (getpermission) {
                 let roleData = await primary.model(constant.Model.roles, rolemodel).find({ roleName: { '$regex': new RegExp(search, "i") }, }).lean();
                 return responsemanager.onSuccess('roles list...', roleData, res);

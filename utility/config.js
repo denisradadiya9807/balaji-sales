@@ -6,6 +6,7 @@ const mongoose = require('mongoose');
 const _ = require('lodash');
 
 let getadmincollection = [
+    { text: 'MainAdmin', value: 'MainAdmin' },
     { text: 'admin', value: 'admin' },
     { text: 'role', value: 'role' },
     { text: 'users', value: 'users' },
@@ -21,6 +22,7 @@ let getadmincollection = [
 async function getadminPermission(roleid, modelName, permissionType) {
     let primary = mongoConnection.useDb(constants.balajisales);
     let result = await primary.model(constants.Model.roles, superroleModel).findById(roleid).lean();
+    // console.log("==>", result);
     if (result && result.status && result.status == true) {
         let finalpermission = [];
         finalpermission = _.filter(result.permissions, { 'collectionname': modelName });

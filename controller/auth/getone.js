@@ -12,7 +12,7 @@ exports.getone = async (req, res) => {
         const primary = mongoConnection.useDb(constant.balajisales);
         let adminData = await primary.model(constant.Model.userregisters, user).findById(req.token._id).lean();
         if (adminData && adminData != null && adminData.Status === true) {
-            let getpermission = await config.getadminPermission(adminData.roleid, 'user', 'View');
+            let getpermission = await config.getadminPermission(adminData.roleid, 'users', 'View');
             if (getpermission) {
                 const userdata = await primary.model(constant.Model.userregisters, user).findOne({ _id: new mongoose.Types.ObjectId(userid) }).lean();
                 if (userdata) {

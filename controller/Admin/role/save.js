@@ -10,15 +10,15 @@ const ResponseManager = require('../../../utility/response.manager');
 exports.save = async (req, res) => {
     const { roleid, rolename, permissions } = req.body;
     // console.log("req.body->", req.body);
-    if (req.token && mongoose.Types.ObjectId.isValid(req.token.adminid)) {
+    if (req.token && mongoose.Types.ObjectId.isValid(req.token._id)) {
         // console.log(req.token);
         // console.log("token", req.token);
         // if (req.token && mongoose.Types.ObjectId.isValid(req.token.adminID)) {
         let primary = mongoconnection.useDb(constants.balajisales);
-        let adminData = await primary.model(constants.Model.admins, adminmodel).findById(req.token.adminid).lean();
+        let adminData = await primary.model(constants.Model.admins, adminmodel).findById(req.token._id).lean();
         if (adminData && adminData != null && adminData.status === true) {
             // console.log("adminData->", adminData);
-            let getpermission = await config.getadminPermission(adminData.roleid, 'roles', 'InsertUpdate')
+            let getpermission = await config.getadminPermission(adminData.roleid, 'MainAdmin', 'InsertUpdate')
             if (getpermission) {
                 if (rolename && rolename != '' && rolename != null && rolename != undefined) {
                     if (permissions && permissions != '' && permissions != null && permissions != undefined) {

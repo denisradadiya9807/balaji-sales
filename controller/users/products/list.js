@@ -7,17 +7,26 @@ const config = require('../../../utility/config');
 const mongoconnection = require('../../../utility/connection');
 const productmodel = require('../../../model/product.model');
 const responsemanager = require('../../../utility/response.manager');
+const rolemodel = require('../../../model/role.model');
 exports.list = async (req, res) => {
-    const { page, limit, search, sortoption } = req.body;
+    const { page, limit, search, sortoption, rolas } = req.body;
     if (req.token && mongoose.Types.ObjectId.isValid(req.token._id)) {
         let primary = mongoconnection.useDb(constant.balajisales);
         let adminData = await primary.model(constant.Model.userregisters, adminmodel).findById(req.token._id).lean();
+        // console.log(req.token._id);
         if (adminData && adminData != null && adminData.Status === true) {
+            console.log("admindata", adminData.roleid);
             let getpermission = await config.getadminPermission(adminData.roleid, 'products', 'View');
+            // console.log(getpermission);
             if (getpermission) {
                 const query = {};
                 if (search && search.trim() !== '') {
                     query.Product_name = { $regex: new RegExp(search.trim(), 'i') };
+                }
+                let ADMIN_ROLE = await primary.model(constant.Model.roles, rolemodel).findOne({ rolename: "Admin", _id: new mongoose.Types.ObjectId(rolas) }).lean();
+                if (adminData.roleid.toString() !== rolas) {
+                    // console.log("User is Admin");
+                    query.isActive = true;
                 }
                 const sortorder = {};
                 if (sortoption === 'pricehightolow') {
@@ -29,7 +38,7 @@ exports.list = async (req, res) => {
                 } else if (sortoption === 'ZTOA') {
                     sortorder.Product_name = -1;
                 } else {
-                    sortorder._id = 1
+                    sortorder.order = 1
                 }
                 primary.model(constant.Model.products, productmodel).paginate(query, {
                     page,

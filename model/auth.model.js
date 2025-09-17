@@ -48,6 +48,14 @@ let auth = new mongoose.Schema({
     },
     Status: {
         type: Boolean,
+        require: true,
+        default: false
+    },
+    routday: {
+        type: []
+    },
+    userid: {
+        type: String,
         require: true
     }
 })

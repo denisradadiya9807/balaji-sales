@@ -13,7 +13,7 @@ exports.login = async (req, res) => {
         if (password && password != '' && password != null && password != undefined) {
             let decryptdpassword = await helper.passwordDecryptor(admindata.password)
             if (password == decryptdpassword) {
-                let accessgenerate = await helper.generateAccessToken({ email: admindata.email.toString(), adminid: admindata._id.toString() })
+                let accessgenerate = await helper.generateAccessToken({ email: admindata.email.toString(), _id: admindata._id.toString() })
                 let data = {
                     accessToken: accessgenerate
                 };
@@ -27,5 +27,5 @@ exports.login = async (req, res) => {
     } else {
         return responseManager.onBadRequest({ message: 'invalid Email please enter valid Email .....!' }, res);
     }
-
 }
+

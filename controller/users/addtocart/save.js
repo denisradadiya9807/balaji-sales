@@ -9,7 +9,7 @@ const addtocart = require('../../../model/addtocart.model');
 const adminmodel = require('../../../model/auth.model');
 const productmodel = require('../../../model/product.model');
 exports.save = async (req, res) => {
-    const { productid, quantity, cartid, total, price, totalAmount } = req.body;
+    const { productid, quantity, cartid, total, price, totalAmount, type } = req.body;
     if (req.token && mongoose.Types.ObjectId.isValid(req.token._id)) {
         let primary = mongoconnection.useDb(constants.balajisales);
         let admindata = await primary.model(constants.Model.userregisters, adminmodel).findById(req.token._id).lean();
@@ -24,26 +24,25 @@ exports.save = async (req, res) => {
                     if (!productdata) {
                         return responsemanager.onBadRequest({ message: 'Product Not Found' }, res);
                     }
-                    let producttotal = productdata.totalAmount * quantity;
-                    // let checkExist = await primary.model(constants.Model.addtocarts, addtocart).findOne({
-                    //     // userid: req.token._id,
-                    //     "products.productid": productdata._id
-                    // }).lean();
-                    // if (checkExist) {
-                    //     return responsemanager.onBadRequest({ message: 'This Product Name Already Exists Pleaese Update' }, res);
-                    // }
+                    let variant = productdata.variants.find(v => v.type === type);
+                    if (!variant) {
+                        return responsemanager.onBadRequest({ message: `${type} varient Not Available for this Product` }, res);
+                    }
+                    let price = variant.totalPrice;
+                    let producttotal = price * quantity
                     let cart = await primary.model(constants.Model.addtocarts, addtocart).findOne({ userid: req.token._id });
                     if (cart) {
-                        console.log("update");
-                        let index = cart.products.findIndex(p => p.productid.toString() === productid);
+                        // console.log("update");
+                        let index = cart.products.findIndex(p => p.productid.toString() === productid && p.type === type);
                         if (index > -1) {
                             cart.products[index].quantity = quantity;
                             cart.products[index].total = cart.products[index].quantity * cart.products[index].price;
                         } else {
                             cart.products.push({
+                                type: type,
                                 productid: productid,
                                 quantity: quantity,
-                                price: productdata.totalAmount,
+                                price: price,
                                 total: producttotal
                             });
                         }
@@ -51,10 +50,11 @@ exports.save = async (req, res) => {
                         await cart.save();
                         return responsemanager.onSuccess("Cart Updated Successfully", cart, res);
                     } else {
-                        console.log("create");
+                        // console.log("create");
                         let obj = {
                             userid: req.token._id,
                             products: [{
+                                type: type,
                                 productid: productid,
                                 quantity: quantity,
                                 price: productdata.totalAmount,
